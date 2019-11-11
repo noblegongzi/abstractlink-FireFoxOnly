@@ -48,21 +48,21 @@
 				String name=request.getParameter("name");
 				//获取浏览器信息
 				String ua = request.getHeader("User-Agent");
-				boolean isQQ=ua.matches(".*MQQBrowser.*");
-				//boolean isQQ=true;
+				boolean isCur=ua.matches(".*Firefox.*");
+				//boolean isCur=ua.matches(".*MQQBrowser.*");
+				//boolean isCur=true;
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				Connection connection=DriverManager.getConnection("jdbc:mysql:///abslink?serverTimezone=Asia/Shanghai","root","627475");
-				PreparedStatement statementDel=connection.prepareStatement("delete from name where name=?");
-				PreparedStatement statement=connection.prepareStatement("select count(1) from name where name=?");
+				PreparedStatement statementMod=connection.prepareStatement("update name_FireFoxOnly set isUseful=0 where name=?");
+				PreparedStatement statement=connection.prepareStatement("select isUseful from name_FireFoxOnly where name=?");
 				statement.setString(1, name);
 				ResultSet rs=statement.executeQuery();
-				rs.next();
-				if(!isQQ){
-					out.println("请使用QQ浏览器登录。");
+				if(!isCur){
+					out.println("请使用Firefox浏览器登录。");
 				}
-				else if(rs.getInt(1)>0&&name!=null&&isQQ){
-					statementDel.setString(1, name);
-					statementDel.execute();
+				else if(rs.first()&&rs.getInt(1)!=0&&name!=null){
+					statementMod.setString(1, name);
+					statementMod.execute();
 					out.println("<iframe id='ifd' src='https://m.tb.cn/h.eH8ll19?sm=0875c2' width='100%' onload='iframeOnload()' scrolling='no' frameborder='0'></iframe>");
 					//https://m.tb.cn/h.eokRB0C?sm=b6b0b6
 					/* String site = new String("https://m.tb.cn/h.eokRB0C?sm=b6b0b6");
